@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>连思鑫♥李周圆的秘密基地</title>
+
+<link rel="stylesheet" href="css/waterfall.css">
+<!-- 不兼容IE10以下浏览器 -->
+<style>
+   body {
+       margin: 0; /* 去除页面默认的外边距 */
+       background-color: black; /* 背景颜色改为黑色 */
+   }
+   canvas {
+       position: fixed; /* 将 canvas 元素固定在页面上 */
+       top: 0;
+       left: 0;
+       z-index: -1; /* 将 canvas 元素的 z-index 设置为 -1，使其处于其他内容的后方 */
+   }
+   h1 {
+      background: linear-gradient(to right, pink, #ff1493); /* 使用线性渐变背景 */
+      -webkit-background-clip: text; /* 设置背景剪切，使文字颜色为背景渐变色 */
+      -webkit-text-fill-color: transparent;
+  }
+</style>
+
+</head>
+<body>
+
+<h1>连思鑫♥李周圆的秘密基地</h1>
+
+<div style="text-align:center;clear:both;margin-bottom:50px;">
+</div>
+
+<div id="waterfall">
+    <span><img src="./imgs/1.jpg"></span>
+    <span><img src="./imgs/2.jpg"></span>
+    <span><img src="./imgs/3.jpg"></span>
+    <span><img src="./imgs/4.jpg"></span>
+    <span><img src="./imgs/5.jpg"></span>
+    <span><img src="./imgs/6.jpg"></span>
+    <span><img src="./imgs/7.jpg"></span>
+    <span><img src="./imgs/8.jpg"></span>
+    <span><img src="./imgs/9.jpg"></span>
+    <span><img src="./imgs/10.jpg"></span>
+    <span><img src="./imgs/11.jpg"></span>
+    <span><img src="./imgs/12.jpg"></span>
+    <span><img src="./imgs/13.jpg"></span>
+    <span><img src="./imgs/14.jpg"></span>
+    <span><img src="./imgs/15.jpg"></span>
+    <span><img src="./imgs/16.jpg"></span>
+    <span><img src="./imgs/17.jpg"></span>
+    <span><img src="./imgs/18.jpg"></span>
+    <span><img src="./imgs/19.jpg"></span>
+</div>
+
+<!-- 添加音乐 -->
+<audio autoplay loop id="vd">
+   <source src="./mp3/1.mp3" type="audio/mpeg" autoplay="autoplay">
+   Your browser does not support the audio element.
+</audio>
+
+<!-- Canvas 绘制玫瑰花瓣飘落效果 -->
+<canvas id="roseCanvas"></canvas>
+
+<script>
+    // 获取 Canvas 元素
+    var canvas = document.getElementById('roseCanvas');
+    var ctx = canvas.getContext('2d');
+
+    // 设置 Canvas 大小为窗口大小
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // 定义玫瑰花瓣的绘制函数
+    function drawRosePetal(x, y, size, rotation) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rotation * Math.PI / 180);
+        ctx.translate(-x, -y);
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x + 20 * size, y - 20 * size, x, y - 40 * size);
+        ctx.quadraticCurveTo(x - 20 * size, y - 20 * size, x, y);
+        ctx.closePath();
+
+        var gradient = ctx.createLinearGradient(x - 20 * size, y - 40 * size, x + 20 * size, y);
+        gradient.addColorStop(0, 'rgba(255, 0, 0, 0.8)');
+        gradient.addColorStop(1, 'rgba(255, 100, 100, 0.5)');
+
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // 存储花瓣的信息
+    var petals = [];
+
+    // 初始化花瓣
+    function initPetals() {
+        for (var i = 0; i < 100; i++) {
+            var x = Math.random() * canvas.width;
+            var y = Math.random() * canvas.height;
+            var size = Math.random() * 2 + 1; // 花瓣大小范围在 1 到 3 之间
+            var rotation = Math.random() * 360; // 随机旋转角度
+            var speed = Math.random() * 2 + 0.5; // 花瓣下落速度范围在 0.5 到 2 之间
+            petals.push({x: x, y: y, size: size, rotation: rotation, speed: speed});
+        }
+    }
+
+    // 更新花瓣的位置
+    function updatePetals() {
+        for (var i = 0; i < petals.length; i++) {
+            var petal = petals[i];
+            petal.y += petal.speed;
+            // 如果花瓣超出屏幕，则重新设置其位置
+            if (petal.y > canvas.height) {
+                petal.x = Math.random() * canvas.width;
+                petal.y = -30; // 从屏幕顶部开始
+            }
+        }
+    }
+
+    // 绘制花瓣
+    function drawPetals() {
+        for (var i = 0; i < petals.length; i++) {
+            var petal = petals[i];
+            drawRosePetal(petal.x, petal.y, petal.size, petal.rotation);
+        }
+    }
+
+    // 绘制玫瑰花
+    function drawRose() {
+        drawPetals();
+        updatePetals();
+    }
+
+    // 初始化花瓣
+    initPetals();
+
+    // 控制花瓣飘落效果
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawRose();
+        requestAnimationFrame(animate);
+    }
+
+    animate(); // 启动动画循环
+
+    // 定义变量存储页面滚动前的位置
+    var lastScrollY = window.scrollY;
+    var ticking = false; // 是否正在处理滚动事件的标志
+
+    // 监听页面滚动事件
+    window.addEventListener('scroll', function() {
+        lastScrollY = window.scrollY;
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                for (var i = 0; i < petals.length; i++) {
+                    petals[i].y += window.scrollY - lastScrollY;
+                }
+                lastScrollY = window.scrollY;
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+</script>
+
+
+
+
+</body>
+</html>
